@@ -1,0 +1,76 @@
+﻿@model PagedList.IPagedList<ASP_Upload_Images.Models.Hang>
+@using PagedList.Mvc;
+<link rel="stylesheet" href="~/Content/PagedList.css" type="text/css" />
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Danh sách mặt hàng</h2>
+@using (Html.BeginForm())
+{
+    <p>
+        Search: @Html.TextBox("SearchString", ViewBag.CurrentFilter as string)
+        <input type="submit" value="Search" />
+    </p>
+}
+
+<table class="table">
+    <tr>
+        <th>
+            Mã hàng
+        </th>
+        <th>
+            @Html.ActionLink("Tên hàng", "Index", new
+       {
+           sortOrder = ViewBag.OrderByName
+       })
+        </th>
+        <th>
+            @Html.ActionLink("Giá bán", "Index", new
+       {
+            sortOrder = ViewBag.OrderByPrice
+       })
+        </th>
+        <th>
+            Hình ảnh
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaHang)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenHang)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Gia)
+            </td>
+            <td>
+                @*// code here*@
+                @{
+                    string ImagePath = "~/wwwroot/Images/" + item.HinhAnh;
+                }
+                <img src="@Url.Content(ImagePath)" width="180" class="img-thumbnail" />
+                @*// end here*@
+                @Html.DisplayFor(modelItem => item.HinhAnh)
+            </td>
+            <td>
+                @Html.ActionLink("Chi tiết", "Details", new { id = item.MaHang }) |
+                @Html.ActionLink("Thêm vào giỏ", "", new { id = item.MaHang })
+            </td>
+        </tr>
+    }
+
+</table>
+Trang @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) / @Model.PageCount
+@Html.PagedListPager(Model, page => Url.Action("Index", new
+{
+    page,
+    sortOrder = ViewBag.CurrentSort,
+    currentFilter = ViewBag.CurrentFilter
+}))
